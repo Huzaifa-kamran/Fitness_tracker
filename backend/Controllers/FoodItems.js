@@ -1,4 +1,3 @@
-const Workouts = require("../Models/WorkoutModel");
 const FoodItem = require("../Models/FoodItemModel");
 
 // @METHOD    POST 
@@ -35,6 +34,23 @@ const AddFood = async(req,res)=>{
 }
 
 // @METHOD    POST 
+// @API       http://localhost:5000/fooditem/
+const GetFood = async(req,res)=>{
+  try {
+    const foodItem = await FoodItem.find();
+
+    if(foodItem.length < 1) {
+      return res.status(404).send({"error": "Food item not found"});
+    }else{
+      return res.status(200).send(foodItem);
+    }
+  } catch (error) {
+    return res.status(500).send({"error":error.message});
+  }
+
+}
+
+// @METHOD    UPDATE  
 // @API       http://localhost:5000/fooditem/:id
 const UpdateFood = async(req,res)=>{
     try {
@@ -53,7 +69,7 @@ const UpdateFood = async(req,res)=>{
       }
    
       
-      if(existingItem){
+      if(name === existingItem.name){
          return res.status(400).send({"error": "Food item already exists"});
       }
    
@@ -75,21 +91,25 @@ const UpdateFood = async(req,res)=>{
   
 }
 
-// @METHOD    POST 
+// @METHOD    DELETE 
 // @API       http://localhost:5000/fooditem/:id
-const GetFood = async(req,res)=>{
-    try {
-      const foodItem = await FoodItem.find();
+const DeleteFood = async(req,res)=>{
+  try {
+    const {id} = req.params;
 
-      if(foodItem.length < 1) {
-        return res.status(404).send({"error": "Food item not found"});
-      }else{
-        return res.status(200).send(foodItem);
-      }
-    } catch (error) {
-      return res.status(500).send({"error":error.message});
+    const deleteItem = await FoodItem.findByIdAndDelete(id);
+   
+    if(deleteItem){
+     return res.status(201).send({"message":"Food item deleted successfully"});
+    }else{
+     return res.status(500).send({"error":"Failed to delete food item"});
     }
-  
+  } catch (error) {
+    return res.status(500).send({"error":error.message});
+  }
+
 }
 
-module.exports = {AddFood,UpdateFood}
+
+
+module.exports = {AddFood,UpdateFood,GetFood,DeleteFood}
