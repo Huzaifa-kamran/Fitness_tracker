@@ -69,23 +69,22 @@ const UserRegister = async(req,res)=>{
 // @METHOD    POST 
 // @API       http://localhost:5000/login 
 const UserLogin = async(req,res)=>{
-    const {userName,userPassword} = req.body;
+    const {userEmail,userPassword} = req.body;
 
-    if(!userName ||!userPassword){
+    if(!userEmail ||!userPassword){
         return res.status(400).send({"error":"User name and password are required"});
     }
  
-    const user = await UserAccount.findOne({ userName: userName });
-    console.log(req.body);
-    console.log(user)
+    const user = await UserAccount.findOne({ userEmail: userEmail });
+   
     if(!user){
         return res.status(404).send({"error":"Invalid credentials p"});
     }
 
-    // const validPassword = await bcrypt.compare(userPassword, user.userPassword);
-    // if(!validPassword){
-    //     return res.status(404).send({"error":"Invalid credentials"});
-    // }
+    const validPassword = await bcrypt.compare(userPassword, user.userPassword);
+    if(!validPassword){
+        return res.status(404).send({"error":"Invalid credentials"});
+    }
     const token = jwt.sign({id: user._id}, process.env.TOKEN_SECRET, {expiresIn: '1hr'});
     return res.status(200).send({
         message: "Login Successful",

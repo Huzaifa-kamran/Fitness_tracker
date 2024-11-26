@@ -26,14 +26,20 @@ const {
    deleteWorkout,
  } = require("./Controllers/WorkoutController");
 
+const {AddFood, UpdateFood} = require("./Controllers/FoodItems");
+
 // Routes
 app.route("/register").post(upload.single("userImage"),UserRegister);
 app.route("/login").post(UserLogin);
 app.route("/user/:id").get(UserGet).put(updateProfile);
-app.route("/workout").post(addWorkout).get(getAllWorkouts);
 
+
+app.route("/workout").post(addWorkout).get(getAllWorkouts);
 app.route("/workout/:id").get(getWorkoutById).put(updateWorkout).delete(deleteWorkout);
-app.route("userWorkout/:id").get(getUserWorkouts);
+app.route("/userWorkout/:userId").get(getUserWorkouts);
+
+app.route("/fooditem").post(AddFood);
+app.route("/fooditem/:id").put(UpdateFood);
 
 // Start server
 app.listen(process.env.PORT,function(){
