@@ -20,8 +20,7 @@ const UserRegister = async(req,res)=>{
      if(!userNameRegex.test(userName)){
         return res.status(400).send({"error":"User name can contain only letters"});
      }
-     console.log(req.body)
-    console.log(userName)
+  
      if(!userEmailRegex.test(userEmail)){
         return res.status(400).send({"error":"Invalid email address"});
      }
@@ -97,17 +96,16 @@ const UserLogin = async(req,res)=>{
 // @API       http://localhost:5000/user/:id
 const UserGet = async(req, res) =>{
     try {
-        console.log("Fetching user with ID:", req.params.id); // Log the ID for verification
+   
         const user = await UserAccount.findById({ _id: req.params.id });
         
         if (!user) {
           return res.status(404).send({ error: "user not found" });
         }
         
-        console.log("Success:", user);
+    
         return res.status(200).send(user);
       } catch (error) {
-        console.error("Error fetching user:", error);
         return res.status(500).send({ error: error.message });
       }
 }

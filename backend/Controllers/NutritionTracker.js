@@ -5,10 +5,10 @@ const FoodItem = require("../Models/FoodItemModel");
 // @API       http://localhost:5000/nutritiontracking
 const AddNutritionTracking = async (req, res) => {
     try {
-      const { userId, meals } = req.body;
+      const { userId, quantity,meals } = req.body;
   
 
-      if (!userId || !meals || meals.length === 0) {
+      if (!userId || !quantity || !meals || meals.length === 0) {
         return res.status(400).send({ error: "Please provide user ID and meals" });
       }
   
@@ -25,6 +25,7 @@ const AddNutritionTracking = async (req, res) => {
       // Create new Nutrition Tracking entry
       const newEntry = await NutritionTracking.create({
         userId,
+        quantity,
         meals,
       });
   
@@ -43,7 +44,7 @@ const AddNutritionTracking = async (req, res) => {
 const UpdateNutritionTracking = async (req, res) => {
     try {
       const { id } = req.params;
-      const { meals } = req.body;
+      const { quantity,meals } = req.body;
   
       // Validation check
       if (!meals || meals.length === 0) {
@@ -63,6 +64,7 @@ const UpdateNutritionTracking = async (req, res) => {
       // Update Nutrition Tracking entry
       const updatedEntry = await NutritionTracking.findByIdAndUpdate(
         id,
+        quantity,
         { meals },
         { new: true, runValidators: true }
       );

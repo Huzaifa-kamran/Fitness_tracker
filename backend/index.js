@@ -1,7 +1,9 @@
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
 const app = express();
-const dotenv = require("dotenv").config();
 const cors = require("cors");
+const dotenv = require("dotenv").config();
 
 //   ------------------------- Middlewares ------------------------- // 
 app.use(express.json());
@@ -13,6 +15,24 @@ app.use(cors({
 const {ImageLayer} = require("./Middlewares/ImageUpload");
 const upload = ImageLayer();
 
+
+//   ------------------------- Socket.IO ------------------------- //
+const server = http.createServer(app);
+const io = socketIo(server, {
+   cors: {
+     origin: "http://localhost:3000",
+     methods: ["GET", "POST"]
+   },
+   transports: ['websocket', 'polling'], // Force WebSocket or Polling as the transport method
+ });
+
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
 
 //   ------------------------- Config ------------------------- // 
 const {connectionDB} = require("./Config/ConnectDB");
@@ -42,6 +62,8 @@ const {
    GetNutritionTrackingByUser,
  } = require("./Controllers/NutritionTracker");
 
+ const { setReminder, getReminders } = require("./Controllers/Reminder");
+
 //   ------------------------- Routes ------------------------- //
 
 // Authentication Routes 
@@ -62,6 +84,14 @@ app.route("/fooditem/:id").put(UpdateFood).delete(DeleteFood);
 app.route("/nutritionTracking").post(AddNutritionTracking);
 app.route("/nutritionTracking/:id").put(UpdateNutritionTracking).delete(DeleteNutritionTracking);
 app.route("/nutritionTracking/:userId").get(GetNutritionTrackingByUser);
+
+// POST route to set a reminder
+app.route("/setReminder").post(setReminder);
+
+// GET route to fetch all reminders for a user
+app.route("/getReminders/:userId").get(getReminders);
+
+
 //   ------------------------- Start Server ------------------------- //
 app.listen(process.env.PORT,function(){
    console.log(`Server is running on ${process.env.PORT}`);

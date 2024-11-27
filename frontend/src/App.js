@@ -1,23 +1,28 @@
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import io from 'socket.io-client';
 
 function App() {
+  useEffect(() => {
+    // Initialize socket connection
+    const socket = io("http://localhost:5000");
+
+    // Event listener for when the server sends a "notification" event
+    socket.on("notification", (data) => {
+      console.log("Notification received:", data);
+      // You can show the notification here
+    });
+
+    // Clean up when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);  // Empty array means this effect runs once when the component mounts
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Frontend</h1>
+      {/* Here, you can add components like a notification display */}
     </div>
   );
 }
