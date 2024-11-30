@@ -1,0 +1,39 @@
+{
+    "workouts": ["Push-ups", "Pull-ups", "Squats", "Bench Press", "Deadlifts", "Running"],
+    "mealTypes": ["Breakfast", "Lunch", "Dinner", "Snacks"],
+    "nutritionItems": {
+      "Breakfast": [
+        { "item": "Egg", "kcals": 70, "protein": 6, "carbs": 1, "fat": 5 },
+        { "item": "Bread", "kcals": 80, "protein": 3, "carbs": 15, "fat": 1 }
+      ],
+      "Lunch": [
+        { "item": "Chicken Breast", "kcals": 165, "protein": 31, "carbs": 0, "fat": 4 },
+        { "item": "Rice", "kcals": 206, "protein": 4, "carbs": 45, "fat": 0 }
+      ],
+      "Dinner": [
+        { "item": "Salmon", "kcals": 208, "protein": 20, "carbs": 0, "fat": 13 },
+        { "item": "Potato", "kcals": 130, "protein": 3, "carbs": 30, "fat": 0 }
+      ],
+      "Snacks": [
+        { "item": "Apple", "kcals": 95, "protein": 0.5, "carbs": 25, "fat": 0.3 },
+        { "item": "Peanut Butter", "kcals": 190, "protein": 7, "carbs": 6, "fat": 16 }
+      ]
+    },
+    "users": [
+      {
+        "email": "admin@admin.com",
+        "password": "admin",
+        "logs": {
+          "workouts": [
+            { "exercise": "Push-ups", "sets": 3, "reps": 12, "weight": 100, "date": "2024-11-25" },
+            { "exercise": "Squats", "sets": 3, "reps": 10, "weight": 50, "date": "2024-11-25" }
+          ],
+          "nutrition": [
+            { "mealType": "Breakfast", "item": "Egg", "amount": 3, "date": "2024-11-25" },
+            { "mealType": "Lunch", "item": "Rice", "amount": 1.5, "date": "2024-11-25" }
+          ]
+        }
+      }
+    ]
+  }
+  
