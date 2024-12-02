@@ -44,50 +44,53 @@ const Profile = () => {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-black text-white">
-      <div className="max-w-3xl mx-auto bg-gray-900 p-8 rounded-lg shadow-lg animate-fade-in">
+    <div className="p-6 min-h-screen bg-black text-white flex flex-col items-center">
+      <h2 className="text-3xl font-bold mb-6 animate-fadeIn">Profile</h2>
+      <div className="space-y-6 w-full max-w-2xl">
         {/* Profile Header */}
-        <div className="flex items-center mb-8">
-          {/* Profile Picture */}
-          <div className="w-24 h-24 bg-red-600 rounded-full flex justify-center items-center text-white text-3xl font-bold shadow-md mr-6">
-            {user.name ? user.name[0].toUpperCase() : "U"}
-          </div>
-          <div>
-            <h2 className="text-3xl font-extrabold">{user.name || "User"}</h2>
-            <p className="text-gray-400">{user.email}</p>
+        <div className="bg-gray-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
+          <div className="flex items-center mb-4">
+            {/* Profile Picture */}
+            <div className="w-20 h-20 bg-red-600 rounded-full flex justify-center items-center text-white text-3xl font-bold shadow-md mr-4">
+              {user.name ? user.name[0].toUpperCase() : "U"}
+            </div>
+            <div>
+              <h3 className="text-2xl font-extrabold">{user.name || "User"}</h3>
+              <p className="text-gray-400">{user.email}</p>
+            </div>
           </div>
         </div>
 
         {/* Activity Logs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-          <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
             <h3 className="text-lg font-bold text-red-400 flex items-center">
               <span className="mr-2">🏋️‍♂️</span> Workouts Logged
             </h3>
-            <p className="text-4xl font-semibold text-white">
+            <p className="text-3xl font-semibold text-white">
               {user.logs.workouts?.length || 0}
             </p>
           </div>
-          <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+          <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
             <h3 className="text-lg font-bold text-red-400 flex items-center">
               <span className="mr-2">🥗</span> Nutrition Logs
             </h3>
-            <p className="text-4xl font-semibold text-white">
+            <p className="text-3xl font-semibold text-white">
               {user.logs.nutrition?.length || 0}
             </p>
           </div>
-          <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+          <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
             <h3 className="text-lg font-bold text-red-400 flex items-center">
               <span className="mr-2">📈</span> Progress Entries
             </h3>
-            <p className="text-4xl font-semibold text-white">
+            <p className="text-3xl font-semibold text-white">
               {user.logs.progress?.length || 0}
             </p>
           </div>
         </div>
 
-        {/* Profile Details */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+        {/* Personal Info */}
+        <div className="bg-gray-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
           <h3 className="text-lg font-bold text-red-400 mb-4">Personal Info</h3>
           <div className="space-y-2 text-gray-300">
             <p>
@@ -104,8 +107,8 @@ const Profile = () => {
         </div>
 
         {/* Profile Actions */}
-        <div className="mt-8 flex justify-end">
-          <button className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 transition-all duration-300">
+        <div className="flex justify-end">
+          <button className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 transition-transform transform hover:scale-105">
             Edit Profile
           </button>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { registerUser, writeUserData } from "../services/DataService";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -50,9 +51,10 @@ const Signup = () => {
     e.preventDefault();
     const result = await registerUser(signupData);
     if (result.success) {
+      toast.success("Account created! Proceed to the next step.");
       setStep(2); // Proceed to personal info step
     } else {
-      alert(result.message || "Signup failed. Please try again.");
+      toast.error(result.message || "Signup failed. Please try again.");
     }
   };
 
@@ -76,23 +78,23 @@ const Signup = () => {
 
     // Save data to the database
     await writeUserData(userData);
-    alert("Signup, personal info, and goals saved successfully!");
+    toast.success("Signup complete! Welcome to your fitness journey.");
     navigate("/dashboard");
   };
 
   return (
-    <div className="p-6 bg-background text-textPrimary min-h-screen flex items-center justify-center">
-      <div className="bg-card p-6 rounded shadow-md w-full max-w-md">
+    <div className="p-6 bg-black text-white min-h-screen flex items-center justify-center">
+      <div className="bg-gray-900 p-8 rounded shadow-lg w-full max-w-md animate-fadeIn">
         {step === 1 && (
-          <form onSubmit={handleSignupSubmit}>
-            <h2 className="text-3xl font-bold mb-6">Sign Up</h2>
+          <form onSubmit={handleSignupSubmit} className="space-y-6">
+            <h2 className="text-3xl font-bold text-center mb-6">Sign Up</h2>
             <input
               type="email"
               name="email"
               placeholder="Email"
               value={signupData.email}
               onChange={handleSignupChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <input
@@ -101,12 +103,12 @@ const Signup = () => {
               placeholder="Password"
               value={signupData.password}
               onChange={handleSignupChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <button
               type="submit"
-              className="w-full bg-secondary text-white py-2 rounded hover:bg-secondary-dark"
+              className="w-full bg-red-600 py-2 rounded text-white hover:bg-red-700 transition"
             >
               Next
             </button>
@@ -114,15 +116,15 @@ const Signup = () => {
         )}
 
         {step === 2 && (
-          <form onSubmit={handlePersonalInfoSubmit}>
-            <h2 className="text-3xl font-bold mb-6">Personal Information</h2>
+          <form onSubmit={handlePersonalInfoSubmit} className="space-y-6">
+            <h2 className="text-3xl font-bold text-center mb-6">Personal Information</h2>
             <input
               type="text"
               name="name"
               placeholder="Name"
               value={personalInfo.name}
               onChange={handlePersonalInfoChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <input
@@ -131,14 +133,14 @@ const Signup = () => {
               placeholder="Age"
               value={personalInfo.age}
               onChange={handlePersonalInfoChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <select
               name="gender"
               value={personalInfo.gender}
               onChange={handlePersonalInfoChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             >
               <option value="">Select Gender</option>
@@ -152,7 +154,7 @@ const Signup = () => {
               placeholder="Height (cm)"
               value={personalInfo.height}
               onChange={handlePersonalInfoChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <input
@@ -161,12 +163,12 @@ const Signup = () => {
               placeholder="Weight (kg)"
               value={personalInfo.weight}
               onChange={handlePersonalInfoChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <button
               type="submit"
-              className="w-full bg-secondary text-white py-2 rounded hover:bg-secondary-dark"
+              className="w-full bg-red-600 py-2 rounded text-white hover:bg-red-700 transition"
             >
               Next
             </button>
@@ -174,22 +176,22 @@ const Signup = () => {
         )}
 
         {step === 3 && (
-          <form onSubmit={handleGoalSubmit}>
-            <h2 className="text-3xl font-bold mb-6">Set Your Goals</h2>
+          <form onSubmit={handleGoalSubmit} className="space-y-6">
+            <h2 className="text-3xl font-bold text-center mb-6">Set Your Goals</h2>
             <input
               type="number"
               name="targetWeight"
               placeholder="Target Weight (kg)"
               value={goalData.targetWeight}
               onChange={handleGoalChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <select
               name="activityLevel"
               value={goalData.activityLevel}
               onChange={handleGoalChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             >
               <option value="">Select Activity Level</option>
@@ -202,7 +204,7 @@ const Signup = () => {
               name="weeklyGoal"
               value={goalData.weeklyGoal}
               onChange={handleGoalChange}
-              className="w-full p-3 mb-3 bg-black rounded"
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             >
               <option value="">Select Weekly Goal</option>
@@ -213,7 +215,7 @@ const Signup = () => {
             </select>
             <button
               type="submit"
-              className="w-full bg-secondary text-white py-2 rounded hover:bg-secondary-dark"
+              className="w-full bg-red-600 py-2 rounded text-white hover:bg-red-700 transition"
             >
               Complete Signup
             </button>

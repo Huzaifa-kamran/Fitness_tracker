@@ -5,31 +5,28 @@ import { toast } from "react-toastify";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Handle login logic
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please enter both email and password.");
+      toast.error("Please enter both email and password.");
       return;
     }
 
     setLoading(true);
-    setError(""); // Clear previous errors
 
     const response = await loginUser(email, password);
     setLoading(false);
 
     if (response.success) {
-      toast.success("Login successful! Redirecting to dashboard...");
+      toast.success("Login successful! Redirecting...");
       setTimeout(() => {
         window.location.href = "/dashboard"; // Redirect to dashboard
       }, 1000);
     } else {
-      setError(response.message || "Invalid email or password.");
-      toast.error(response.message || "Login failed.");
+      toast.error(response.message || "Invalid email or password.");
     }
   };
 
@@ -40,25 +37,20 @@ const Login = () => {
     }
   };
 
-  // Reset error on input change
-  const handleInputChange = (setter) => (e) => {
-    setter(e.target.value);
-    if (error) setError(""); // Clear error when the user starts typing
-  };
-
   return (
-    <div className="p-6 bg-background text-textPrimary max-w-md mx-auto min-h-screen flex items-center">
-      <div className="w-full">
-        <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
-        <div className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-black text-white p-6">
+      <div className="bg-gray-900 p-8 rounded-lg shadow-md w-full max-w-md animate-fadeIn">
+        <h2 className="text-3xl font-bold text-center mb-6">Welcome Back</h2>
+        <div className="space-y-6">
           {/* Email Input */}
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-3 bg-card text-textPrimary rounded focus:outline-none focus:ring-2 focus:ring-secondary"
             value={email}
-            onChange={handleInputChange(setEmail)}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             autoComplete="email"
+            required
           />
 
           {/* Password Input with Toggle */}
@@ -66,16 +58,17 @@ const Login = () => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="w-full p-3 bg-card text-textPrimary rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={password}
-              onChange={handleInputChange(setPassword)}
+              onChange={(e) => setPassword(e.target.value)}
               onKeyDown={handleKeyDown}
+              className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               autoComplete="current-password"
+              required
             />
             <button
               type="button"
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-secondary focus:outline-none"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-red-500 focus:outline-none"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? "Hide" : "Show"}
@@ -85,16 +78,15 @@ const Login = () => {
           {/* Login Button */}
           <button
             onClick={handleLogin}
-            className={`w-full p-3 rounded text-white ${
-              loading ? "bg-gray-500 cursor-not-allowed" : "bg-secondary hover:bg-secondary-dark"
+            className={`w-full p-3 rounded text-white transition-transform transform ${
+              loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-700 hover:scale-105"
             }`}
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
-          {/* Error Message */}
-          {error && <p className="text-red-500 text-center">{error}</p>}
         </div>
       </div>
     </div>

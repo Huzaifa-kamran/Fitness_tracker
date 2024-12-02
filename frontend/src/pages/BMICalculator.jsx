@@ -11,30 +11,28 @@ const BMICalculator = () => {
 
   const toggleUnits = () => {
     if (isMetric) {
-      // Convert to imperial
       if (height) {
-        const totalInches = parseFloat(height) / 2.54; // cm to inches
-        const feet = Math.floor(totalInches / 12); // Calculate feet
-        const inches = Math.round(totalInches % 12); // Remaining inches
-        setHeight(feet); // Set feet value
-        setHeightInches(inches); // Set inches value
+        const totalInches = parseFloat(height) / 2.54;
+        const feet = Math.floor(totalInches / 12);
+        const inches = Math.round(totalInches % 12);
+        setHeight(feet);
+        setHeightInches(inches);
       }
       if (weight) {
-        setWeight((parseFloat(weight) * 2.20462).toFixed(1)); // Convert kg to lbs
+        setWeight((parseFloat(weight) * 2.20462).toFixed(1));
       }
     } else {
-      // Convert to metric
       if (height) {
         const totalInches =
-          parseFloat(height) * 12 + parseFloat(heightInches || 0); // ft and in to total inches
-        setHeight((totalInches * 2.54).toFixed(0)); // Convert to cm
-        setHeightInches(""); // Clear inches
+          parseFloat(height) * 12 + parseFloat(heightInches || 0);
+        setHeight((totalInches * 2.54).toFixed(0));
+        setHeightInches("");
       }
       if (weight) {
-        setWeight((parseFloat(weight) / 2.20462).toFixed(1)); // Convert lbs to kg
+        setWeight((parseFloat(weight) / 2.20462).toFixed(1));
       }
     }
-    setIsMetric(!isMetric); // Toggle unit system
+    setIsMetric(!isMetric);
   };
 
   const calculateBMI = () => {
@@ -42,28 +40,28 @@ const BMICalculator = () => {
     setBmi(null);
 
     if (!height || !weight || (!isMetric && heightInches === "")) {
-      setError("Please enter all required fields.");
+      setError("Please fill in all required fields.");
       return;
     }
 
     let heightInMeters = 0;
-    let convertedWeight = parseFloat(weight); // Use this for weight conversion
+    let convertedWeight = parseFloat(weight);
 
     if (isMetric) {
       if (height <= 0 || weight <= 0) {
         setError("Height and weight must be positive values.");
         return;
       }
-      heightInMeters = height / 100; // Convert cm to meters
+      heightInMeters = height / 100;
     } else {
       if (height <= 0 || heightInches < 0 || weight <= 0) {
         setError("Height and weight must be positive values.");
         return;
       }
       const heightInFeet =
-        parseFloat(height) * 12 + parseFloat(heightInches); // Convert ft and inches to total inches
-      heightInMeters = heightInFeet * 0.0254; // Convert inches to meters
-      convertedWeight = convertedWeight * 0.453592; // Convert lbs to kg
+        parseFloat(height) * 12 + parseFloat(heightInches);
+      heightInMeters = heightInFeet * 0.0254;
+      convertedWeight = convertedWeight * 0.453592;
     }
 
     const bmiValue = (
@@ -103,16 +101,15 @@ const BMICalculator = () => {
 
   return (
     <div className="p-6 bg-background text-textPrimary min-h-screen flex flex-col items-center">
-      <div className="w-full max-w-md bg-card p-6 rounded shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-center">BMI Calculator</h2>
-
+      <h2 className="text-3xl font-bold mb-6 animate-fadeIn">BMI Calculator</h2>
+      <div className="space-y-6 w-full max-w-2xl">
         {/* Unit Toggle */}
         <div className="flex justify-center mb-4">
           <button
             onClick={toggleUnits}
             className={`px-4 py-2 rounded-l ${
               isMetric ? "bg-secondary text-white" : "bg-black"
-            }`}
+            } hover:bg-secondary-dark transition-transform transform hover:scale-105`}
           >
             Metric
           </button>
@@ -120,82 +117,83 @@ const BMICalculator = () => {
             onClick={toggleUnits}
             className={`px-4 py-2 rounded-r ${
               !isMetric ? "bg-secondary text-white" : "bg-black"
-            }`}
+            } hover:bg-secondary-dark transition-transform transform hover:scale-105`}
           >
             Imperial
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-center mb-4 animate-fadeIn">
+            {error}
+          </p>
+        )}
 
         {/* Inputs */}
-        <div>
-          {isMetric ? (
-            <>
+        {isMetric ? (
+          <>
+            <input
+              type="number"
+              placeholder="Height (cm)"
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              className="w-full p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            />
+            <input
+              type="number"
+              placeholder="Weight (kg)"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              className="w-full p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            />
+          </>
+        ) : (
+          <>
+            <div className="flex space-x-2">
               <input
                 type="number"
-                placeholder="Height (cm)"
+                placeholder="Height (ft)"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className="w-full p-3 mb-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                className="w-1/2 p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               />
               <input
                 type="number"
-                placeholder="Weight (kg)"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                className="w-full p-3 mb-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                placeholder="Height (in)"
+                value={heightInches}
+                onChange={(e) => setHeightInches(e.target.value)}
+                className="w-1/2 p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               />
-            </>
-          ) : (
-            <>
-              <div className="flex space-x-2 mb-3">
-                <input
-                  type="number"
-                  placeholder="Height (ft)"
-                  value={height}
-                  onChange={(e) => setHeight(e.target.value)}
-                  className="w-1/2 p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
-                />
-                <input
-                  type="number"
-                  placeholder="Height (in)"
-                  value={heightInches}
-                  onChange={(e) => setHeightInches(e.target.value)}
-                  className="w-1/2 p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
-                />
-              </div>
-              <input
-                type="number"
-                placeholder="Weight (lbs)"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                className="w-full p-3 mb-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
-              />
-            </>
-          )}
-        </div>
+            </div>
+            <input
+              type="number"
+              placeholder="Weight (lbs)"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              className="w-full p-3 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            />
+          </>
+        )}
 
+        {/* Buttons */}
         <div className="flex justify-between items-center space-x-4">
           <button
             onClick={calculateBMI}
-            className="flex-1 bg-secondary text-white px-4 py-2 rounded hover:bg-secondary-dark transition"
+            className="flex-1 bg-secondary text-white px-4 py-2 rounded hover:bg-secondary-dark transition-transform transform hover:scale-105"
           >
             Calculate BMI
           </button>
           <button
             onClick={handleReset}
-            className="flex-1 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
+            className="flex-1 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition-transform transform hover:scale-105"
           >
             Reset
           </button>
         </div>
 
+        {/* BMI Result */}
         {bmi && (
-          <div
-            className="mt-6 bg-black p-4 rounded shadow-md animate-fade-in"
-            style={{ animation: "fadeIn 0.5s ease-in-out" }}
-          >
+          <div className="mt-6 bg-black p-4 rounded shadow-md animate-fadeIn">
             <p className="text-lg">
               <strong>Your BMI:</strong> {bmi}
             </p>
@@ -204,31 +202,32 @@ const BMICalculator = () => {
             </p>
           </div>
         )}
-      </div>
 
-      {bmi && (
-        <div className="w-full max-w-2xl mt-6">
-          <div className="relative w-full h-6 bg-gray-300 rounded">
-            <div
-              className="absolute top-0 left-0 h-full bg-secondary rounded"
-              style={{ width: calculateMarkerPosition() }}
-            >
+        {/* BMI Chart */}
+        {bmi && (
+          <div className="w-full mt-6">
+            <div className="relative w-full h-6 bg-gray-300 rounded">
               <div
-                className="absolute -top-4 left-full w-4 h-4 bg-red-600 rounded-full transform -translate-x-1/2"
-                title={`Your BMI: ${bmi}`}
-              ></div>
+                className="absolute top-0 left-0 h-full bg-secondary rounded"
+                style={{ width: calculateMarkerPosition() }}
+              >
+                <div
+                  className="absolute -top-4 left-full w-4 h-4 bg-red-600 rounded-full transform -translate-x-1/2"
+                  title={`Your BMI: ${bmi}`}
+                ></div>
+              </div>
+            </div>
+            <div className="flex justify-between mt-2 text-sm text-white">
+              <span>10</span>
+              <span>Underweight</span>
+              <span>Normal</span>
+              <span>Overweight</span>
+              <span>Obesity</span>
+              <span>40</span>
             </div>
           </div>
-          <div className="flex justify-between mt-2 text-sm text-white">
-            <span>10</span>
-            <span>Underweight</span>
-            <span>Normal</span>
-            <span>Overweight</span>
-            <span>Obesity</span>
-            <span>40</span>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

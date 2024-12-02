@@ -75,11 +75,8 @@ const updateUserLogs = async (email, logType, logEntry) => {
 const loginUser = async (email, password) => {
   try {
     const data = await fetchData();
-    const user = data.users.find(
-      (u) =>
-        u.email.toLowerCase() === email.toLowerCase() &&
-        u.password === password
-    );
+    const user = data.users.find((u) => u.email === email && u.password === password);
+
     if (user) {
       const token = btoa(email); // Encode email as a simple token
       localStorage.setItem("authToken", token); // Save token in localStorage
