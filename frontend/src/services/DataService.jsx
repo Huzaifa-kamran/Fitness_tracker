@@ -74,21 +74,32 @@ const updateUserLogs = async (email, logType, logEntry) => {
 // Log in a user
 const loginUser = async (email, password) => {
   try {
-    const data = await fetchData();
-    const user = data.users.find(
-      (u) =>
-        u.email.toLowerCase() === email.toLowerCase() &&
-        u.password === password
-    );
-    if (user) {
-      const token = btoa(email); // Encode email as a simple token
-      localStorage.setItem("authToken", token); // Save token in localStorage
-      console.log("Login successful. Token saved:", token);
-      return { success: true, user };
-    } else {
-      console.error("Invalid credentials");
-      return { success: false, message: "Invalid email or password" };
-    }
+    // const data = await fetchData();
+    // const user = data.users.find(
+    //   (u) =>
+    //     u.email.toLowerCase() === email.toLowerCase() &&
+    //     u.password === password
+    // );
+    // if (user) {
+    //   const token = btoa(email); // Encode email as a simple token
+    //   localStorage.setItem("authToken", token); // Save token in localStorage
+    //   console.log("Login successful. Token saved:", token);
+    //   return { success: true, user };
+    // } else {
+    //   console.error("Invalid credentials");
+    //   return { success: false, message: "Invalid email or password" };
+    
+    // }
+    const response = await fetch('http://localhost:5000/login',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({userEmail:email, userPassword:password})
+    });
+    console.log({email, password})
+    const data = await response.json();
+    console.log(data);
   } catch (error) {
     console.error("Login failed:", error);
     return { success: false, message: "An error occurred during login" };
@@ -98,21 +109,28 @@ const loginUser = async (email, password) => {
 // Register a new user
 const registerUser = async (newUser) => {
   try {
-    const data = await fetchData();
-    const userExists = data.users.some((u) => u.email === newUser.email);
+    // const data = await fetchData();
+    // const userExists = data.users.some((u) => u.email === newUser.email);
 
-    if (userExists) {
-      console.error("User already exists");
-      return { success: false, message: "User already exists" };
-    }
+    // if (userExists) {
+    //   console.error("User already exists");
+    //   return { success: false, message: "User already exists" };
+    // }
 
-    // Add the new user to the users array
-    newUser.logs = { workouts: [], nutrition: [], progress: [] }; // Initialize logs
-    data.users.push(newUser);
+    // // Add the new user to the users array
+    // newUser.logs = { workouts: [], nutrition: [], progress: [] }; // Initialize logs
+    // data.users.push(newUser);
 
-    // Simulate saving the updated data
-    await writeUserData(data);
-    console.log("Registration successful. User added:", newUser);
+    // // Simulate saving the updated data
+    // await writeUserData(data);
+    // console.log("Registration successful. User added:", newUser);
+    const response = fetch('http://localhost:5000/register',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newUser)
+    })
     return { success: true };
   } catch (error) {
     console.error("Registration failed:", error);

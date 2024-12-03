@@ -4,74 +4,116 @@ const jwt = require("jsonwebtoken");
 const UserAccount = require("../Models/UserAccountModel")
 
 
-// @METHOD    POST 
+// @METHOD    POST
 // @API       http://localhost:5000/register
-const UserRegister = async(req,res)=>{
-    try { 
-    const {userName,userEmail,userPassword} = req.body;
+const UserRegister = async (req, res) => {
+  try {
+    const {
+      userName,userEmail,userPassword,userAge,gender,height,weight,targetWeight,activityLevel,weeklyGoal} = req.body;
 
-     // Username: allows alphabets only
-     const userNameRegex = /^[a-zA-Z]+( [a-zA-Z]+)*$/;
+    // Username: allows alphabets only
+    const userNameRegex = /^[a-zA-Z]+( [a-zA-Z]+)*$/;
 
-       // Email: standard email format
-       const userEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-     
-    //  Validations 
-     if(!userNameRegex.test(userName)){
-        return res.status(400).send({"error":"User name can contain only letters"});
-     }
-  
-     if(!userEmailRegex.test(userEmail)){
-        return res.status(400).send({"error":"Invalid email address"});
-     }
+    // Email: standard email format
+    const userEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-     
-     if(userPassword.length < 8){
-        return res.status(400).send({"error":"Password must be at least 8 characters"});
-     }
-
-     const cloudinaryImage = req.file.path;
-
-   // Check Existing User name and email
-   const existingName = await UserAccount.findOne({ userName: userName });
-   const existingEmail = await UserAccount.findOne({ userEmail: userEmail });
-     if(existingName){
-        return res.status(400).send({"error":"User name already exists"});
-     }
-     if(existingEmail){
-        return res.status(400).send({"error":"Email already exists"});
-     }
-
-     // Hash Password
-     const hashedPassword = await bcrypt.hash(userPassword,10);
-     const user = await UserAccount.create({
-       userName: userName,
-       userEmail: userEmail,
-       userImage: cloudinaryImage,
-       userPassword: hashedPassword
-     });
-
-     if(user){
-        return res.status(201).send({"message":"User registered successfully"});
-    }else{
-        return res.status(500).send({"error":"Failed to register user"});
+    // Validations
+    if (!userName || !userNameRegex.test(userName)) {
+      return res.status(400).json({ error: "User name can contain only letters" });
     }
 
+    if (!userEmail || !userEmailRegex.test(userEmail)) {
+      return res.status(400).json({ error: "Invalid email address" });
+    }
 
-  
-} catch (error) {
-    return res.send({"error":error.message})
-}
+    if (!userPassword || userPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 8 characters long" });
+    }
 
-}
+    if (!userAge || isNaN(userAge) || userAge < 0) {
+      return res.status(400).json({ error: "Invalid age provided" });
+    }
+
+    if (!gender || !["Male", "Female", "Other"].includes(gender)) {
+      return res.status(400).json({ error: "Invalid gender provided" });
+    }
+
+    if (!height || height <= 0) {
+      return res.status(400).json({ error: "Height must be a positive number" });
+    }
+
+    if (!weight || weight <= 0) {
+      return res.status(400).json({ error: "Weight must be a positive number" });
+    }
+
+    if (!targetWeight || isNaN(targetWeight) || targetWeight <= 0) {
+      return res
+        .status(400)
+        .json({ error: "Target weight must be a positive number" });
+    }
+
+    if (!activityLevel) {
+      return res.status(400).json({ error: "Invalid activity level provided" });
+    }
+
+    if (!weeklyGoal) {
+      return res.status(400).json({ error: "Invalid weekly goal provided" });
+    }
+
+    // Check if file was uploaded for the image
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ error: "User image must be uploaded" });
+    }
+
+    const cloudinaryImage = req.file.path;
+
+    // Check existing user name and email
+    const existingName = await UserAccount.findOne({ userName });
+    if (existingName) {
+      return res.status(400).json({ error: "User name already exists" });
+    }
+
+    const existingEmail = await UserAccount.findOne({ userEmail });
+    if (existingEmail) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(userPassword, 10);
+    const user = await UserAccount.create({
+      userName,
+      userEmail,
+      userImage: cloudinaryImage,
+      userPassword: hashedPassword,
+      userAge,
+      gender,
+      height,
+      weight,
+      targetWeight,
+      activityLevel,
+      weeklyGoal,
+    });
+
+    if (user) {
+      return res.status(201).json({ message: "User registered successfully" });
+    } else {
+      return res.status(500).json({ error: "Failed to register user" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "An unexpected error occurred" });
+  }
+};
+
+
 
 // @METHOD    POST 
 // @API       http://localhost:5000/login 
 const UserLogin = async(req,res)=>{
     const {userEmail,userPassword} = req.body;
-
     if(!userEmail ||!userPassword){
-        return res.status(400).send({"error":"User name and password are required"});
+        return res.status(400).send({"error":"User Email and password are required"});
     }
  
     const user = await UserAccount.findOne({ userEmail: userEmail });
