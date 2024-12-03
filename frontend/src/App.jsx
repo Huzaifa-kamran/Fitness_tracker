@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { ToastContainer } from "react-toastify";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
-import Notification from "./components/Notification";
+import Footer from "./components/Footer";
 
 // Lazy-loaded pages
 const Login = lazy(() => import("./pages/Login"));
@@ -13,7 +13,7 @@ const Workouts = lazy(() => import("./pages/Workouts"));
 const Nutrition = lazy(() => import("./pages/Nutrition"));
 const Profile = lazy(() => import("./pages/Profile"));
 const BMICalculator = lazy(() => import("./pages/BMICalculator"));
-
+const ProgressPage = lazy(() => import("./pages/ProgressPage")); // New Progress Page
 
 // Authentication and Layout Handling
 function ProtectedRoute({ children }) {
@@ -23,9 +23,10 @@ function ProtectedRoute({ children }) {
 
 function ProtectedLayout({ children }) {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="p-6">{children}</main>
+      <main className="flex-grow p-6">{children}</main>
+      <Footer />
     </div>
   );
 }
@@ -91,14 +92,22 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+          <Route
+            path="/progress"
+            element={
+              <ProtectedRoute>
+                <ProtectedLayout>
+                  <ProgressPage />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Redirect unknown routes */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Suspense>
       <ToastContainer />
-      <Notification/>
     </Router>
   );
 }

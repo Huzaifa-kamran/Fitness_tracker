@@ -74,32 +74,18 @@ const updateUserLogs = async (email, logType, logEntry) => {
 // Log in a user
 const loginUser = async (email, password) => {
   try {
-    // const data = await fetchData();
-    // const user = data.users.find(
-    //   (u) =>
-    //     u.email.toLowerCase() === email.toLowerCase() &&
-    //     u.password === password
-    // );
-    // if (user) {
-    //   const token = btoa(email); // Encode email as a simple token
-    //   localStorage.setItem("authToken", token); // Save token in localStorage
-    //   console.log("Login successful. Token saved:", token);
-    //   return { success: true, user };
-    // } else {
-    //   console.error("Invalid credentials");
-    //   return { success: false, message: "Invalid email or password" };
-    
-    // }
-    const response = await fetch('http://localhost:5000/login',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({userEmail:email, userPassword:password})
-    });
-    console.log({email, password})
-    const data = await response.json();
-    console.log(data);
+    const data = await fetchData();
+    const user = data.users.find((u) => u.email === email && u.password === password);
+
+    if (user) {
+      const token = btoa(email); // Encode email as a simple token
+      localStorage.setItem("authToken", token); // Save token in localStorage
+      console.log("Login successful. Token saved:", token);
+      return { success: true, user };
+    } else {
+      console.error("Invalid credentials");
+      return { success: false, message: "Invalid email or password" };
+    }
   } catch (error) {
     console.error("Login failed:", error);
     return { success: false, message: "An error occurred during login" };

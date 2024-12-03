@@ -70,6 +70,17 @@ const Navbar = () => {
           >
             BMI Calculator
           </NavLink>
+          <NavLink
+            to="/progress"
+            className={({ isActive }) =>
+              isActive
+                ? "block text-secondary font-bold"
+                : "block hover:text-secondary transition-all"
+            }
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Progress
+          </NavLink>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -159,6 +170,17 @@ const Navbar = () => {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             BMI Calculator
+          </NavLink>
+          <NavLink
+            to="/progress"
+            className={({ isActive }) =>
+              isActive
+                ? "block text-secondary font-bold"
+                : "block hover:text-secondary transition-all"
+            }
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Progress
           </NavLink>
           <button
             onClick={handleLogout}
