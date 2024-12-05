@@ -46,6 +46,12 @@ const {
   updateProfile,
 } = require("./Controllers/Auth");
 
+const {
+  AddUserInfo,
+  GetUserInfo,
+  UpdateUserInfo,
+  DeleteUserInfo,
+} = require("./Controllers/UserInfo");
 // Workout Controllers
 const {
   addWorkout,
@@ -73,6 +79,9 @@ const { setReminder, getReminders } = require("./Controllers/Reminder");
 app.route("/register").post(upload.single("userImage"), UserRegister);
 app.route("/login").post(UserLogin);
 app.route("/user/:id").get(UserGet).put(updateProfile);
+
+app.route("/userInfo").post(AddUserInfo);
+app.route("/userInfo/:userId").get(GetUserInfo).put(UpdateUserInfo).delete(DeleteUserInfo);
 
 // Workout Routes
 app.route("/workout").post(addWorkout).get(getAllWorkouts);
