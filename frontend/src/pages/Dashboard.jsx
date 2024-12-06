@@ -8,21 +8,61 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [workoutLogs, setWorkoutLogs] = useState([]);
   const [nutritionLogs, setNutritionLogs] = useState([]);
-  const [progressLogs, setProgressLogs] = useState([]);
+  const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const fetchWorkoutLogs = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/userWorkout/${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch workout logs");
+      const data = await response.json();
+      setWorkoutLogs(data);
+    } catch (error) {
+      console.error("Error fetching workout logs:", error);
+    }
+  };
+
+  const fetchNutritionLogs = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/nutritionTracking/${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch nutrition logs");
+      const data = await response.json();
+      setNutritionLogs(data);
+    } catch (error) {
+      console.error("Error fetching nutrition logs:", error);
+    }
+  };
+
+  const fetchReminders = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/getReminders/${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch reminders");
+      const data = await response.json();
+      setReminders(data);
+    } catch (error) {
+      console.error("Error fetching reminders:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
-      const loggedInUser = await getLoggedInUser();
-      if (loggedInUser) {
-        setUser(loggedInUser);
-        setWorkoutLogs(loggedInUser.logs.workouts || []);
-        setNutritionLogs(loggedInUser.logs.nutrition || []);
-        setProgressLogs(loggedInUser.logs.progress || []);
-      } else {
-        console.error("No logged-in user found.");
+      try {
+        const loggedInUser = await getLoggedInUser();
+        if (loggedInUser) {
+          setUser(loggedInUser);
+          console.log("loggedInUser.id = " + loggedInUser._id)
+          // Fetch associated logs and reminders
+          await fetchWorkoutLogs(loggedInUser._id);
+          await fetchNutritionLogs(loggedInUser._id);
+          await fetchReminders(loggedInUser._id);
+        } else {
+          console.error("No logged-in user found.");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchUser();
@@ -54,11 +94,12 @@ const Dashboard = () => {
       {/* Welcome Section */}
       <header className="max-w-5xl mx-auto p-6 mb-8 bg-gradient-to-r from-red-500 to-black rounded shadow-lg flex items-center justify-between animate-slide-in-down">
         <div>
-          <h1 className="text-4xl font-bold">Welcome, {user.name || "User"}!</h1>
+          <h1 className="text-4xl font-bold">Welcome, {user.userName || "User"}!</h1>
           <p className="text-lg mt-2">Here’s your personalized fitness dashboard.</p>
         </div>
-        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-2xl font-bold">
-          {user.name ? user.name[0].toUpperCase() : "U"}
+        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-2xl font-bold overflow-hidden">
+          {/* {user.userName ? user.userName[0].toUpperCase() : "U"} */}
+          <img src={`${user.userImage} `} className="overflow-hidden" alt="" />
         </div>
       </header>
 
@@ -74,12 +115,6 @@ const Dashboard = () => {
           ) : (
             <p className="text-gray-500">No workout data available.</p>
           )}
-          <button
-            onClick={() => console.log("View All Workouts")}
-            className="mt-4 text-red-400 hover:text-white underline text-sm"
-          >
-            View All Workouts
-          </button>
         </div>
 
         {/* Nutrition Logs Chart */}
@@ -92,30 +127,22 @@ const Dashboard = () => {
           ) : (
             <p className="text-gray-500">No nutrition data available.</p>
           )}
-          <button
-            onClick={() => console.log("View All Nutrition Logs")}
-            className="mt-4 text-red-400 hover:text-white underline text-sm"
-          >
-            View All Nutrition Logs
-          </button>
         </div>
 
-        {/* Progress Chart */}
+        {/* Reminders Section */}
         <div className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105 animate-slide-in-left">
           <h3 className="text-xl font-semibold text-red-400 mb-4 flex items-center">
-            <span className="mr-2">📈</span> Progress Tracking
+            <span className="mr-2">⏰</span> Reminders
           </h3>
-          {progressLogs.length > 0 ? (
-            <ProgressChart logs={progressLogs} />
+          {reminders.length > 0 ? (
+            <ul className="text-gray-300 list-disc pl-5">
+              {reminders.map((reminder, index) => (
+                <li key={index}>{reminder.text}</li>
+              ))}
+            </ul>
           ) : (
-            <p className="text-gray-500">No progress data available.</p>
+            <p className="text-gray-500">No reminders set.</p>
           )}
-          <button
-            onClick={() => console.log("View All Progress Logs")}
-            className="mt-4 text-red-400 hover:text-white underline text-sm"
-          >
-            View All Progress Logs
-          </button>
         </div>
       </div>
     </div>

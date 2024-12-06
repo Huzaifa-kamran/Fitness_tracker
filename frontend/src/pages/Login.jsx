@@ -1,32 +1,50 @@
 import React, { useState } from "react";
-import { loginUser } from "../services/DataService";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  // Handle login logic
-  const handleLogin = async () => {
-    if (!email || !password) {
-      toast.error("Please enter both email and password.");
+  const handleToast = (message, toastType) => {
+    toastType === "danger" ? toast.error(message) : toast.success(message);
+  };
+   // Handle login logic
+   const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!userEmail || !userEmail) {
+      handleToast("Please enter both email and password.", "danger");
       return;
     }
 
-    setLoading(true);
+    const loginData = { userEmail, userPassword };
 
-    const response = await loginUser(email, password);
-    setLoading(false);
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
+      });
 
-    if (response.success) {
-      toast.success("Login successful! Redirecting...");
-      setTimeout(() => {
-        window.location.href = "/dashboard"; // Redirect to dashboard
-      }, 1000);
-    } else {
-      toast.error(response.message || "Invalid email or password.");
+      const responseData = await response.json();
+
+      if (response.ok) {
+        console.log("Response Data:", responseData);
+        localStorage.setItem("authToken", responseData.token);
+        console.log("Token Stored:", localStorage.getItem("authToken"));
+        handleToast("Login successful", "success");
+        navigate("/dashboard"); // Navigate to the dashboard
+      } else {
+        handleToast(responseData.error, "danger");
+      }
+    } catch (error) {
+      console.error("Error during login:", error.message);
+      handleToast("Login failed", "danger");
     }
   };
 
@@ -46,8 +64,8 @@ const Login = () => {
           <input
             type="email"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
             className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             autoComplete="email"
             required
@@ -58,8 +76,8 @@ const Login = () => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={userPassword}
+              onChange={(e) => setUserPassword(e.target.value)}
               onKeyDown={handleKeyDown}
               className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               autoComplete="current-password"
@@ -87,8 +105,20 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-400">
+              Don't have an account?{" "}
+              <button
+                onClick={() => navigate("/signup")}
+                className="text-red-500 underline hover:text-red-600"
+              >
+                Sign Up
+              </button>
+            </p>
+          </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

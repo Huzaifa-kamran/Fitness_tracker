@@ -42,6 +42,7 @@ const addWorkout = async (req, res) => {
   const getUserWorkouts = async (req, res) => {
     try {
       const { userId } = req.params;
+      console.log(userId);
       const workouts = await Workouts.find({ userId }).populate("userId", "userName userEmail");
   
       if (!workouts || workouts.length === 0) {

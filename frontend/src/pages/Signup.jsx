@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { registerUser, writeUserData } from "../services/DataService";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
   const navigate = useNavigate();
 
   // Step Management
   const [step, setStep] = useState(1);
+  const [userImage, setUserImage] = useState(null);
 
   // Signup Form State
   const [signupData, setSignupData] = useState({
+    name: "",
     email: "",
     password: "",
+    image: userImage
   });
 
   // Personal Info State
   const [personalInfo, setPersonalInfo] = useState({
-    name: "",
+    
     age: "",
     gender: "",
     height: "",
@@ -47,14 +51,40 @@ const Signup = () => {
   };
 
   // Handle Signup Submission
-  const handleSignupSubmit = async (e) => {
+ 
+  const handleToast = (message, toastType) => {
+    toastType === "danger" ? toast.error(message) : toast.success(message);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await registerUser(signupData);
-    if (result.success) {
-      toast.success("Account created! Proceed to the next step.");
-      setStep(2); // Proceed to personal info step
-    } else {
-      toast.error(result.message || "Signup failed. Please try again.");
+
+    const formData = new FormData();
+    formData.append("userName", signupData.name);
+    formData.append("userEmail", signupData.email);
+    formData.append("userPassword", signupData.password);
+    formData.append("userImage", userImage);
+
+    try {
+      const response = await fetch("http://localhost:5000/register", {
+        method: "POST",
+        body: formData,
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        handleToast(responseData.message, "success");
+
+        // Delay navigation by 2 seconds
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        handleToast(responseData.error, "danger");
+      }
+    } catch (error) {
+      handleToast("Registration failed", "danger");
     }
   };
 
@@ -86,8 +116,17 @@ const Signup = () => {
     <div className="p-6 bg-black text-white min-h-screen flex items-center justify-center">
       <div className="bg-gray-900 p-8 rounded shadow-lg w-full max-w-md animate-fadeIn">
         {step === 1 && (
-          <form onSubmit={handleSignupSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <h2 className="text-3xl font-bold text-center mb-6">Sign Up</h2>
+            <input
+            type="text"
+            name="name"
+            placeholder="Username"
+            value={signupData.name}
+            onChange={handleSignupChange}
+            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            required
+          />
             <input
               type="email"
               name="email"
@@ -106,12 +145,30 @@ const Signup = () => {
               className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
+            <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={(e) => setUserImage(e.target.files[0])}
+            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
             <button
               type="submit"
               className="w-full bg-red-600 py-2 rounded text-white hover:bg-red-700 transition"
             >
               Next
             </button>
+            <div className="text-center mt-4">
+            <p className="text-sm text-gray-400">
+              Already have an account?{" "}
+              <button
+                onClick={() => navigate("/login")}
+                className="text-red-500 underline hover:text-red-600"
+              >
+                Login
+              </button>
+            </p>
+          </div>
           </form>
         )}
 
@@ -172,6 +229,7 @@ const Signup = () => {
             >
               Next
             </button>
+            
           </form>
         )}
 
@@ -219,9 +277,11 @@ const Signup = () => {
             >
               Complete Signup
             </button>
+            
           </form>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };
