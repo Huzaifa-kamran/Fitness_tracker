@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Home from "./pages/Home";
 
 // Lazy-loaded pages
 const Login = lazy(() => import("./pages/Login"));
@@ -40,7 +41,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
+          <Route path="/" element={<Home/>}/>
           {/* Protected Routes */}
           <Route
             path="/dashboard"
