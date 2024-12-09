@@ -4,6 +4,8 @@ import { ToastContainer } from "react-toastify";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Chatpage from "./components/Chatpage"; // Chat widget
+
 import Home from "./pages/Home";
 
 // Lazy-loaded pages
@@ -28,6 +30,7 @@ function ProtectedLayout({ children }) {
       <Navbar />
       <main className="flex-grow p-6">{children}</main>
       <Footer />
+      <Chatpage />
     </div>
   );
 }
