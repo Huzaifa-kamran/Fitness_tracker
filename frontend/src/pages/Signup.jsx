@@ -33,9 +33,9 @@ const Signup = () => {
 
       const responseData = await response.json();
 
-      if (response.ok) {
+      if (responseData.message) {
         handleToast(responseData.message, "success");
-
+         console.log(response)
         // Delay navigation by 2 seconds
         setTimeout(() => {
           navigate("/login");

@@ -4,9 +4,11 @@ import { ToastContainer } from "react-toastify";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Chatpage from "./components/Chatpage"; // Chat widget
+import Chatpage from "./components/Chatpage"; 
 
 import Home from "./pages/Home";
+import { useEffect } from "react";
+import NoticationAlert from "./components/NoticationAlert";
 
 // Lazy-loaded pages
 const Login = lazy(() => import("./pages/Login"));
@@ -16,7 +18,8 @@ const Workouts = lazy(() => import("./pages/Workouts"));
 const Nutrition = lazy(() => import("./pages/Nutrition"));
 const Profile = lazy(() => import("./pages/Profile"));
 const BMICalculator = lazy(() => import("./pages/BMICalculator"));
-const ProgressPage = lazy(() => import("./pages/ProgressPage")); // New Progress Page
+const ProgressPage = lazy(() => import("./pages/ProgressPage"));
+const AddReminder = lazy(() => import("./pages/AddReminder")); 
 
 // Authentication and Layout Handling
 function ProtectedRoute({ children }) {
@@ -25,9 +28,12 @@ function ProtectedRoute({ children }) {
 }
 
 function ProtectedLayout({ children }) {
+  console.log()
   return (
     <div className="flex flex-col min-h-screen">
+      
       <Navbar />
+      <NoticationAlert/>
       <main className="flex-grow p-6">{children}</main>
       <Footer />
       <Chatpage />
@@ -37,6 +43,8 @@ function ProtectedLayout({ children }) {
 
 // Main App Component
 function App() {
+  
+  
   return (
     <Router>
       <Suspense fallback={<Loader />}>
@@ -102,6 +110,17 @@ function App() {
               <ProtectedRoute>
                 <ProtectedLayout>
                   <ProgressPage />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            }
+          />
+
+         <Route
+            path="/addReminder"
+            element={
+              <ProtectedRoute>
+                <ProtectedLayout>
+                  <AddReminder />
                 </ProtectedLayout>
               </ProtectedRoute>
             }

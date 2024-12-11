@@ -29,9 +29,13 @@ const UserRegister = async(req,res)=>{
    if(userPassword.length < 8){
       return res.status(400).send({"error":"Password must be at least 8 characters"});
    }
-
-   const cloudinaryImage = req.file.path;
-
+   console.log(!req.file);
+    if(!req.file){
+      return res.status(400).send({"error":"User Image must be specified"});
+    }
+    const cloudinaryImage = req.file.path;
+    
+   
  // Check Existing User name and email
  const existingName = await UserAccount.findOne({ userName: userName });
  const existingEmail = await UserAccount.findOne({ userEmail: userEmail });

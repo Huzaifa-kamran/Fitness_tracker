@@ -4,7 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv").config();
 const { connectionDB } = require("./Config/ConnectDB");
 const authMiddleware = require("./Middlewares/authMiddleware"); // Path to the auth middleware
-
+const jwt = require("jsonwebtoken");
 // Initialize Express and HTTP server
 const app = express();
 const server = http.createServer(app);
@@ -19,12 +19,31 @@ app.use(
   })
 );
 
+
+
 // Socket.IO Setup
 const io = require("socket.io")(server, {
   cors: {
     origin: "http://localhost:3000", // Replace with your frontend URL
     methods: ["GET", "POST"],
   },
+});
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  console.log("Token received:", token);
+  if (!token) {
+    return next(new Error("Authentication error: Token missing"));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    console.log("Decoded token:", decoded);
+    socket.user = decoded;
+    next();
+  } catch (err) {
+    console.error("Token verification failed:", err.message);
+    next(new Error("Authentication error"));
+  }
 });
 
 io.on("connection", (socket) => {

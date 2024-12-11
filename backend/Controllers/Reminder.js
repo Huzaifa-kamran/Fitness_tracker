@@ -1,5 +1,5 @@
 const Reminder = require("../Models/ReminderModel");
-
+const io = require("socket.io")
 const setReminder = async (req, res) => {
   try {
     const { userId, time, message, type } = req.body;

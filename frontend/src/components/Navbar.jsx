@@ -85,6 +85,17 @@ const Navbar = () => {
           >
             Progress
           </NavLink>
+          <NavLink
+            to="/addReminder"
+            className={({ isActive }) =>
+              isActive
+                ? "block text-secondary font-bold"
+                : "block hover:text-secondary transition-all"
+            }
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+          Add Reminder
+          </NavLink>
         </div>
 
         {/* Mobile Menu Toggle */}
