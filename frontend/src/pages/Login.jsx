@@ -1,23 +1,25 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
 
   const handleToast = (message, toastType) => {
     toastType === "danger" ? toast.error(message) : toast.success(message);
   };
-   // Handle login logic
-   const handleLogin = async (e) => {
+
+  // Handle login logic
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!userEmail || !userEmail) {
+    if (!userEmail || !userPassword) {
       handleToast("Please enter both email and password.", "danger");
       return;
     }
@@ -35,8 +37,8 @@ const Login = () => {
 
       if (response.ok) {
         console.log("Response Data:", responseData);
-        localStorage.setItem("authToken", responseData.token);
-        console.log("Token Stored:", localStorage.getItem("authToken"));
+        localStorage.setItem("token", responseData.token);
+        console.log("Token Stored:", localStorage.getItem("token"));
         handleToast("Login successful", "success");
         navigate("/dashboard"); // Navigate to the dashboard
       } else {
@@ -51,13 +53,13 @@ const Login = () => {
   // Handle "Enter" key for form submission
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleLogin();
+      handleLogin(e);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white p-6">
-      <div className="bg-gray-900 p-8 rounded-lg shadow-md w-full max-w-md animate-fadeIn">
+    <div className="p-6 bg-black text-white min-h-screen flex items-center justify-center">
+      <div className="bg-gray-900 p-8 rounded shadow-lg w-full max-w-md animate-fadeIn">
         <h2 className="text-3xl font-bold text-center mb-6">Welcome Back</h2>
         <div className="space-y-6">
           {/* Email Input */}
@@ -105,6 +107,8 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+
+          {/* Redirect to Signup */}
           <div className="text-center mt-4">
             <p className="text-sm text-gray-400">
               Don't have an account?{" "}
@@ -116,9 +120,10 @@ const Login = () => {
               </button>
             </p>
           </div>
+
+          <ToastContainer />
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 };

@@ -3,6 +3,7 @@ const http = require("http");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
 const { connectionDB } = require("./Config/ConnectDB");
+const authMiddleware = require("./Middlewares/authMiddleware"); // Path to the auth middleware
 
 // Initialize Express and HTTP server
 const app = express();
@@ -34,6 +35,22 @@ io.on("connection", (socket) => {
   });
 });
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) {
+    return next(new Error("Authentication error"));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    socket.user = decoded;
+    next();
+  } catch (err) {
+    next(new Error("Authentication error"));
+  }
+});
+
+
 // Controllers and Routes
 const { ImageLayer } = require("./Middlewares/ImageUpload");
 const upload = ImageLayer();
@@ -46,12 +63,6 @@ const {
   updateProfile,
 } = require("./Controllers/Auth");
 
-const {
-  AddUserInfo,
-  GetUserInfo,
-  UpdateUserInfo,
-  DeleteUserInfo,
-} = require("./Controllers/UserInfo");
 // Workout Controllers
 const {
   addWorkout,
@@ -80,22 +91,31 @@ app.route("/register").post(upload.single("userImage"), UserRegister);
 app.route("/login").post(UserLogin);
 app.route("/user/:id").get(UserGet).put(updateProfile);
 
-app.route("/userInfo").post(AddUserInfo);
-app.route("/userInfo/:userId").get(GetUserInfo).put(UpdateUserInfo).delete(DeleteUserInfo);
+// Workout Routes (Protected)
+app.route("/workout").post(authMiddleware, addWorkout).get(authMiddleware, getAllWorkouts);
+app
+  .route("/workout/:id")
+  .get(authMiddleware, getWorkoutById)
+  .put(authMiddleware, updateWorkout)
+  .delete(authMiddleware, deleteWorkout);
+app.route("/userWorkout/:userId").get(authMiddleware, getUserWorkouts);
 
-// Workout Routes
-app.route("/workout").post(addWorkout).get(getAllWorkouts);
-app.route("/workout/:id").get(getWorkoutById).put(updateWorkout).delete(deleteWorkout);
-app.route("/userWorkout/:userId").get(getUserWorkouts);
+// Nutrition Tracking Routes (Protected)
+app
+  .route("/nutritionTracking")
+  .post(authMiddleware, AddNutritionTracking);
+app
+  .route("/nutritionTracking/:id")
+  .put(authMiddleware, UpdateNutritionTracking)
+  .delete(authMiddleware, DeleteNutritionTracking);
+app
+  .route("/nutritionTracking/:userId")
+  .get(authMiddleware, GetNutritionTrackingByUser);
 
-// Food Item Routes
+  // Food Item Routes
 app.route("/fooditem").post(AddFood).get(GetFood);
 app.route("/fooditem/:id").put(UpdateFood).delete(DeleteFood);
 
-// Nutrition Tracking Routes
-app.route("/nutritionTracking").post(AddNutritionTracking);
-app.route("/nutritionTracking/:id").put(UpdateNutritionTracking).delete(DeleteNutritionTracking);
-app.route("/nutritionTracking/:userId").get(GetNutritionTrackingByUser);
 
 // Reminder Routes
 app.route("/setReminder").post(setReminder);

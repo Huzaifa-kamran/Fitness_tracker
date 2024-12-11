@@ -20,7 +20,7 @@ const ProgressPage = lazy(() => import("./pages/ProgressPage")); // New Progress
 
 // Authentication and Layout Handling
 function ProtectedRoute({ children }) {
-  const isAuthenticated = localStorage.getItem("authToken");
+  const isAuthenticated = localStorage.getItem("token");
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 

@@ -1,5 +1,5 @@
-import {jwtDecode} from "jwt-decode";
 const DATA_URL = "/dummyData.json";
+
 // Fetch data from the JSON file
 const fetchData = async () => {
   try {
@@ -95,28 +95,21 @@ const loginUser = async (email, password) => {
 // Register a new user
 const registerUser = async (newUser) => {
   try {
-    // const data = await fetchData();
-    // const userExists = data.users.some((u) => u.email === newUser.email);
+    const data = await fetchData();
+    const userExists = data.users.some((u) => u.email === newUser.email);
 
-    // if (userExists) {
-    //   console.error("User already exists");
-    //   return { success: false, message: "User already exists" };
-    // }
+    if (userExists) {
+      console.error("User already exists");
+      return { success: false, message: "User already exists" };
+    }
 
-    // // Add the new user to the users array
-    // newUser.logs = { workouts: [], nutrition: [], progress: [] }; // Initialize logs
-    // data.users.push(newUser);
+    // Add the new user to the users array
+    newUser.logs = { workouts: [], nutrition: [], progress: [] }; // Initialize logs
+    data.users.push(newUser);
 
-    // // Simulate saving the updated data
-    // await writeUserData(data);
-    // console.log("Registration successful. User added:", newUser);
-    const response = fetch('http://localhost:5000/register',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newUser)
-    })
+    // Simulate saving the updated data
+    await writeUserData(data);
+    console.log("Registration successful. User added:", newUser);
     return { success: true };
   } catch (error) {
     console.error("Registration failed:", error);
@@ -125,40 +118,17 @@ const registerUser = async (newUser) => {
 };
 
 // Get the logged-in user from localStorage
-
 const getLoggedInUser = async () => {
   try {
-    // Get the token from local storage
     const token = localStorage.getItem("authToken");
     if (!token) {
       console.log("No user is logged in");
       return null;
     }
 
-    // Decode the JWT token to extract userId
-    const decodedToken = jwtDecode(token);
-    const userId = decodedToken.id;
-
-    if (!userId) {
-      console.error("Invalid token: No userId found");
-      return null;
-    }
-
-    // Hit the API to get user details
-    const response = await fetch(`http://localhost:5000/user/${userId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      console.log(`Failed to fetch user details: ${response.statusText}`);
-      return null;
-    }
-
-    const user = await response.json();
+    const email = atob(token); // Decode the token to get the email
+    const data = await fetchData();
+    const user = data.users.find((u) => u.email === email);
 
     if (user) {
       console.log("Logged-in user found:", user);
@@ -172,9 +142,6 @@ const getLoggedInUser = async () => {
     return null;
   }
 };
-
-
-
 
 // Export all functions
 export { 

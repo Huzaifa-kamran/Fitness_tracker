@@ -5,10 +5,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+   // Logout handler
   const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Clear the token
+    localStorage.removeItem("token");
     navigate("/login");
   };
+
+  // Check if user is logged in
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
 
   return (
     <nav className="bg-card text-textPrimary p-4 shadow-md">
@@ -87,6 +91,7 @@ const Navbar = () => {
         <button
           className="md:hidden text-primary-light hover:text-secondary transition-all"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -105,12 +110,21 @@ const Navbar = () => {
         </button>
 
         {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="hidden md:block bg-secondary text-white py-2 px-4 rounded-lg shadow-lg hover:bg-red-700 transition-all duration-300"
-        >
-          Logout
-        </button>
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="hidden md:block bg-secondary text-white py-2 px-4 rounded-lg shadow-lg hover:bg-red-700 transition-all duration-300"
+          >
+            Logout
+          </button>
+        ) : (
+          <NavLink
+            to="/login"
+            className="hidden md:block bg-secondary text-white py-2 px-4 rounded-lg shadow-lg hover:bg-red-700 transition-all duration-300"
+          >
+            Login
+          </NavLink>
+        )}
       </div>
 
       {/* Mobile Menu Dropdown */}
@@ -182,12 +196,14 @@ const Navbar = () => {
           >
             Progress
           </NavLink>
-          <button
-            onClick={handleLogout}
-            className="w-full bg-secondary text-white py-2 rounded-lg hover:bg-red-700 transition-all"
-          >
-            Logout
-          </button>
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="w-full bg-secondary text-white py-2 rounded-lg hover:bg-red-700 transition-all"
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </nav>

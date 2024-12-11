@@ -1,29 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { getLoggedInUser } from "../services/DataService";
 import Loader from "../components/Loader";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+
     const fetchProfile = async () => {
       try {
-        const loggedInUser = await getLoggedInUser();
-        if (loggedInUser) {
-          setUser(loggedInUser);
+        // Call your API to get the user profile
+        const response = await fetch(
+          `http://localhost:5000/user/${getUserIdFromToken(token)}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include token in Authorization header
+            },
+          }
+        );
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
         } else {
-          console.error("No user logged in.");
+          console.error("Failed to fetch user profile.");
+          navigate("/login");
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+        navigate("/login");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [token, navigate]);
+
+  const getUserIdFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+      return payload.id;
+    } catch (error) {
+      console.error("Invalid token format:", error);
+      return null;
+    }
+  };
 
   if (loading) {
     return (
@@ -51,12 +81,25 @@ const Profile = () => {
         <div className="bg-gray-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
           <div className="flex items-center mb-4">
             {/* Profile Picture */}
-            <div className="w-20 h-20 bg-red-600 rounded-full flex justify-center items-center text-white text-3xl font-bold shadow-md mr-4">
-              {user.name ? user.name[0].toUpperCase() : "U"}
+            <div className="w-20 h-20 rounded-full flex justify-center items-center text-white text-3xl font-bold shadow-md mr-4 overflow-hidden bg-gray-700">
+              {user.userImage ? (
+                <img
+                  src={user.userImage}
+                  alt={`${user.userName}'s profile`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>
+                  {user.userName ? user.userName[0].toUpperCase() : "U"}
+                </span>
+              )}
             </div>
+
             <div>
-              <h3 className="text-2xl font-extrabold">{user.name || "User"}</h3>
-              <p className="text-gray-400">{user.email}</p>
+              <h3 className="text-2xl font-extrabold">
+              {user.userName ? user.userName.toUpperCase() : "U"}
+              </h3>
+              <p className="text-gray-400">{user.userEmail}</p>
             </div>
           </div>
         </div>
@@ -68,7 +111,7 @@ const Profile = () => {
               <span className="mr-2">🏋️‍♂️</span> Workouts Logged
             </h3>
             <p className="text-3xl font-semibold text-white">
-              {user.logs.workouts?.length || 0}
+              {user.logs?.workouts?.length || 0}
             </p>
           </div>
           <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
@@ -76,7 +119,7 @@ const Profile = () => {
               <span className="mr-2">🥗</span> Nutrition Logs
             </h3>
             <p className="text-3xl font-semibold text-white">
-              {user.logs.nutrition?.length || 0}
+              {user.logs?.nutrition?.length || 0}
             </p>
           </div>
           <div className="bg-red-900 p-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
@@ -84,7 +127,7 @@ const Profile = () => {
               <span className="mr-2">📈</span> Progress Entries
             </h3>
             <p className="text-3xl font-semibold text-white">
-              {user.logs.progress?.length || 0}
+              {user.logs?.progress?.length || 0}
             </p>
           </div>
         </div>
@@ -94,15 +137,15 @@ const Profile = () => {
           <h3 className="text-lg font-bold text-red-400 mb-4">Personal Info</h3>
           <div className="space-y-2 text-gray-300">
             <p>
-              <strong>Name:</strong> {user.name || "N/A"}
+              <strong>Name:</strong> {user.userName || "N/A"}
             </p>
             <p>
-              <strong>Email:</strong> {user.email}
+              <strong>Email:</strong> {user.userEmail}
             </p>
-            <p>
+            {/* <p>
               <strong>Joined On:</strong>{" "}
-              {user.joinedOn || new Date().toLocaleDateString()}
-            </p>
+              {new Date(user.createdAt).toLocaleDateString() || "N/A"}
+            </p> */}
           </div>
         </div>
 

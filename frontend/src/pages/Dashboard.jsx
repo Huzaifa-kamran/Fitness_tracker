@@ -3,70 +3,71 @@ import { getLoggedInUser } from "../services/DataService";
 import WorkoutLogsChart from "../components/charts/WorkoutLogsChart";
 import NutritionLogsChart from "../components/charts/NutritionLogsChart";
 import ProgressChart from "../components/charts/ProgressChart";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [workoutLogs, setWorkoutLogs] = useState([]);
   const [nutritionLogs, setNutritionLogs] = useState([]);
-  const [reminders, setReminders] = useState([]);
+  const [progressLogs, setProgressLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  const fetchWorkoutLogs = async (userId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/userWorkout/${userId}`);
-      if (!response.ok) throw new Error("Failed to fetch workout logs");
-      const data = await response.json();
-      setWorkoutLogs(data);
-    } catch (error) {
-      console.error("Error fetching workout logs:", error);
+  // Redirect to login if no token
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
     }
-  };
-
-  const fetchNutritionLogs = async (userId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/nutritionTracking/${userId}`);
-      if (!response.ok) throw new Error("Failed to fetch nutrition logs");
-      const data = await response.json();
-      setNutritionLogs(data);
-    } catch (error) {
-      console.error("Error fetching nutrition logs:", error);
-    }
-  };
-
-  const fetchReminders = async (userId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/getReminders/${userId}`);
-      if (!response.ok) throw new Error("Failed to fetch reminders");
-      const data = await response.json();
-      setReminders(data);
-    } catch (error) {
-      console.error("Error fetching reminders:", error);
-    }
-  };
+  }, [token, navigate]);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!token) {
+        console.error("No token found. Please log in.");
+        return;
+      }
+
       try {
-        const loggedInUser = await getLoggedInUser();
-        if (loggedInUser) {
-          setUser(loggedInUser);
-          console.log("loggedInUser.id = " + loggedInUser._id)
-          // Fetch associated logs and reminders
-          await fetchWorkoutLogs(loggedInUser._id);
-          await fetchNutritionLogs(loggedInUser._id);
-          await fetchReminders(loggedInUser._id);
+        // Call your API to get the user details
+        const response = await fetch(`http://localhost:5000/user/${getUserIdFromToken(token)}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+          },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          setWorkoutLogs(userData.logs?.workouts || []);
+          setNutritionLogs(userData.logs?.nutrition || []);
+          setProgressLogs(userData.logs?.progress || []);
         } else {
-          console.error("No logged-in user found.");
+          console.error("Failed to fetch user details.");
+          navigate("/login");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user:", error.message);
+        navigate("/login");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [token, navigate]);
+
+  const getUserIdFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+      return payload.id;
+    } catch (error) {
+      console.error("Invalid token format:", error);
+      return null;
+    }
+  };
 
   if (loading) {
     return (
@@ -97,9 +98,8 @@ const Dashboard = () => {
           <h1 className="text-4xl font-bold">Welcome, {user.userName || "User"}!</h1>
           <p className="text-lg mt-2">Here’s your personalized fitness dashboard.</p>
         </div>
-        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-2xl font-bold overflow-hidden">
-          {/* {user.userName ? user.userName[0].toUpperCase() : "U"} */}
-          <img src={`${user.userImage} `} className="overflow-hidden" alt="" />
+        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-2xl font-bold">
+          {user.userName ? user.userName[0].toUpperCase() : "U"}
         </div>
       </header>
 
@@ -115,6 +115,12 @@ const Dashboard = () => {
           ) : (
             <p className="text-gray-500">No workout data available.</p>
           )}
+          <button
+            onClick={() => console.log("View All Workouts")}
+            className="mt-4 text-red-400 hover:text-white underline text-sm"
+          >
+            View All Workouts
+          </button>
         </div>
 
         {/* Nutrition Logs Chart */}
@@ -127,22 +133,30 @@ const Dashboard = () => {
           ) : (
             <p className="text-gray-500">No nutrition data available.</p>
           )}
+          <button
+            onClick={() => console.log("View All Nutrition Logs")}
+            className="mt-4 text-red-400 hover:text-white underline text-sm"
+          >
+            View All Nutrition Logs
+          </button>
         </div>
 
-        {/* Reminders Section */}
+        {/* Progress Chart */}
         <div className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105 animate-slide-in-left">
           <h3 className="text-xl font-semibold text-red-400 mb-4 flex items-center">
-            <span className="mr-2">⏰</span> Reminders
+            <span className="mr-2">📈</span> Progress Tracking
           </h3>
-          {reminders.length > 0 ? (
-            <ul className="text-gray-300 list-disc pl-5">
-              {reminders.map((reminder, index) => (
-                <li key={index}>{reminder.text}</li>
-              ))}
-            </ul>
+          {progressLogs.length > 0 ? (
+            <ProgressChart logs={progressLogs} />
           ) : (
-            <p className="text-gray-500">No reminders set.</p>
+            <p className="text-gray-500">No progress data available.</p>
           )}
+          <button
+            onClick={() => console.log("View All Progress Logs")}
+            className="mt-4 text-red-400 hover:text-white underline text-sm"
+          >
+            View All Progress Logs
+          </button>
         </div>
       </div>
     </div>
