@@ -1,0 +1,57 @@
+.feedback-form-container {
+    background-color: #2c2f48; /* Dark theme background */
+    color: #ffffff; /* White text */
+    padding: 45px;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: 30px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  }
+  
+  .form-heading {
+    text-align: center;
+    color: #ff4d4d; /* Red accent */
+    margin-bottom: 20px;
+  }
+  
+  .feedback-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .feedback-form label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .feedback-form input,
+  .feedback-form textarea,
+  .feedback-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #1f2133;
+    color: #ffffff;
+    font-size: 14px;
+  }
+  
+  .feedback-form textarea {
+    height: 100px;
+  }
+  
+  .submit-button {
+    background-color: #ff4d4d; /* Red accent */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #e63939; /* Darker red */
+  }
+  

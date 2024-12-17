@@ -105,6 +105,11 @@ const {
 
 const { setReminder, getReminders } = require("./Controllers/Reminder");
 
+const {
+  addFeedback,
+  getFeedback
+} = require("./Controllers/Feedback");
+
 // Authentication Routes
 app.route("/register").post(upload.single("userImage"), UserRegister);
 app.route("/login").post(UserLogin);
@@ -140,6 +145,7 @@ app.route("/fooditem/:id").put(UpdateFood).delete(DeleteFood);
 app.route("/setReminder").post(setReminder);
 app.route("/getReminders/:userId").get(getReminders);
 
+app.route("/feedback").post(addFeedback).get(getFeedback);
 // Start Server
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

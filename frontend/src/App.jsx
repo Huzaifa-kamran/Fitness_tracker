@@ -9,6 +9,7 @@ import Chatpage from "./components/Chatpage";
 import Home from "./pages/Home";
 import { useEffect } from "react";
 import NoticationAlert from "./components/NoticationAlert";
+import FeedbackForm from "./components/FeedbackForm";
 
 // Lazy-loaded pages
 const Login = lazy(() => import("./pages/Login"));
@@ -121,6 +122,17 @@ function App() {
               <ProtectedRoute>
                 <ProtectedLayout>
                   <AddReminder />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            }
+          />
+
+        <Route
+            path="/feedback"
+            element={
+              <ProtectedRoute>
+                <ProtectedLayout>
+                  <FeedbackForm/>
                 </ProtectedLayout>
               </ProtectedRoute>
             }
